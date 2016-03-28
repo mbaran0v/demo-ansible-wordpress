@@ -68,7 +68,7 @@ Vagrant.configure(2) do |config|
                 ansible.groups = {
                     machine[:group] => machine[:name]
                 }
-                ansible.playbook = ".ansible/main.yaml"
+                ansible.playbook = "ansible/main.yaml"
             end
 
         end # config.vm.define

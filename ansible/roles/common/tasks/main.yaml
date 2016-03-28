@@ -1,0 +1,40 @@
+---
+
+- name: add EPEL repo
+  yum: name=epel-release state=latest
+
+- name: install SELinux libs
+  yum: name={{ item }} state=latest
+  with_items:
+    - libselinux-python
+    - libsemanage-python
+
+- name: disable SELinux
+  selinux: state=disabled
+
+- name: update package tzdata
+  yum: name=tzdata state=latest
+
+- stat: path={{ tz_path }}
+  register: tz_file
+
+#- name: change info in /etc/sysconfig/clock
+#  lineinfile: 
+#    dest=/etc/sysconfig/clock
+#    regexp="^ZONE="
+#    line="ZONE=\"{{ tz_name }}\""
+#    backup=yes
+#  when: tz_file.stat.exists == True
+
+- name: change system localtime
+  copy:
+    src={{ tz_path }}
+    dest=/etc/localtime
+    backup=yes
+  when: tz_file.stat.exists == True
+
+#- name: install common packages
+#  yum: name={{ item }} state=latest
+#  with_items:
+#    - net-tools
+#    - mc

@@ -1,0 +1,62 @@
+---
+
+- name: install repo Webtatic (for PHP5.6)
+  yum: name={{ repo_webtatic }} state=present
+
+- name: install nginx
+  yum: name=nginx state=latest
+
+- name: configure nginx (main config)
+  template:
+    src=nginx/nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: configure nginx (wp config)
+  template:
+    src=nginx/wp-back.conf.j2
+    dest=/etc/nginx/conf.d/wp-back.conf
+  notify: restart nginx
+
+- name: start nginx
+  service: name=nginx state=started enabled=yes
+
+- name: install PHP
+  yum: name={{ item }} state=latest
+  with_items:
+    - php56w
+    - php56w-mysqlnd
+
+- name: mkdir for root www
+  file: path=/var/www/ state=directory
+
+- name: download wordress
+  get_url: url={{ wp_url }} dest=/tmp/wordpress_latest.tar.gz
+
+- name: unpack wordpress
+  command: chdir=/var/www tar xpf /tmp/wordpress_latest.tar.gz creates=/var/www/wordpress
+
+- name: restore permissions
+  file:
+    path=/var/www/wordpress
+    state=directory
+    mode=755 owner=nginx group=nginx
+    recurse=yes
+
+- name: configure wordpress
+  template:
+    src=wordpress/wp-config.php.j2
+    dest=/var/www/wordpress/wp-config.php
+
+- name: install php-fpm
+  yum: name=php56w-fpm state=latest
+
+- name: configure php-fpm (disable old pools)
+  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.conf.original creates=/etc/php-fpm.d/www.conf.original
+
+- name: configure php-fpm
+  template: src=php-fpm/wp.conf.j2 dest=/etc/php-fpm.d/wp.conf
+  notify: restart php-fpm
+
+- name: start php-fpm
+  service: name=php-fpm state=started enabled=yes

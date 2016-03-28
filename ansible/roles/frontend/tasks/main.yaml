@@ -1,0 +1,22 @@
+---
+
+- name: install nginx
+  yum: name=nginx state=latest
+
+- name: configure nginx (disable old configs)
+  command: mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.original creates=/etc/nginx/nginx.conf.original
+
+- name: configure nginx (main config)
+  template:
+    src=nginx/nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: configure nginx
+  template:
+    src=nginx/wp-front.conf.j2
+    dest=/etc/nginx/conf.d/wp-front.conf
+  notify: restart nginx
+
+- name: start nginx
+  service: name=nginx state=started enabled=yes

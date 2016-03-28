@@ -1,0 +1,8 @@
+---
+- hosts: frontend
+  user: vagrant
+  sudo: yes
+
+  roles:
+    - common
+    - frontend

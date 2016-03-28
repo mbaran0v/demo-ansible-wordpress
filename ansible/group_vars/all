@@ -1,0 +1,22 @@
+---
+
+# timezone
+tz_name: Europe/Ulyanovsk
+tz_path: /usr/share/zoneinfo/Europe/Ulyanovsk
+
+# ip addresses
+backend_01: 10.73.0.21
+backend_02: 10.73.0.22
+db_01: 10.73.0.31
+
+# These are the WordPress database settings
+wp_db_name: wp
+wp_db_user: wp
+wp_db_pass: wp-secret
+wp_db_host: 10.73.0.31
+
+wp_url: https://wordpress.org/latest.tar.gz
+
+# repo addresses
+repo_webtatic: https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+repo_percona: https://www.percona.com/redir/downloads/percona-release/redhat/latest/percona-release-0.1-3.noarch.rpm
