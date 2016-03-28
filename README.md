@@ -6,8 +6,8 @@
 These playbooks deploy a simple all-in-one configuration of the popular WordPress blogging platform and CMS, frontend by the Nginx web server and the PHP-FPM process manager
 
 then run, like this:
-	1) git clone
-	2) vagrant up
-	3) firefox http://localhost:8037/
+ <git clone>
+ <vagrant up>
+ <firefox http://localhost:8037/>
 
 The ansible playbook will configure PerconaDB, WordPress, Nginx, and PHP-FPM. When the run is complete, you can hit access server to begin the WordPress configuration.
