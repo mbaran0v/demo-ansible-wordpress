@@ -5,7 +5,7 @@
 
 These playbooks deploy a simple all-in-one configuration of the popular WordPress blogging platform and CMS, frontend by the Nginx web server and the PHP-FPM process manager
 
-then run, like this:
+then run, like this:  
 `git clone`  
 `vagrant up`  
 `firefox http://localhost:8037/`  
