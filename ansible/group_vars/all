@@ -1,5 +1,7 @@
 ---
 
+remote_user: vagrant
+
 # timezone
 tz_name: Europe/Ulyanovsk
 tz_path: /usr/share/zoneinfo/Europe/Ulyanovsk
@@ -15,7 +17,8 @@ wp_db_user: wp
 wp_db_pass: wp-secret
 wp_db_host: 10.73.0.31
 
-wp_url: https://wordpress.org/latest.tar.gz
+wp_ver: 4.2.2
+#wp_url: https://wordpress.org/latest.tar.gz
 
 # repo addresses
 repo_webtatic: https://mirror.webtatic.com/yum/el7/webtatic-release.rpm

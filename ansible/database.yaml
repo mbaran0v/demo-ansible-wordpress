@@ -1,8 +1,9 @@
 ---
 - hosts: database
-  user: vagrant
-  sudo: yes
+  user: "{{ remote_user }}"
+  become: yes
 
   roles:
     - common
     - database
+
