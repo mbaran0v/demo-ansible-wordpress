@@ -22,7 +22,7 @@
   copy:
     src={{ tz_path }}
     dest=/etc/localtime
-	remote_src=True
+    remote_src=True
     backup=yes
   when: tz_file.stat.exists == True
 
