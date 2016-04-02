@@ -14,14 +14,6 @@ servers = [
         :forward => { 8037 => 80 }
     },
     {
-        :name => "db01." + DOMAIN,
-        :eth1 => "10.73.0.31",
-        :tpl => "centos/7",
-        :ram => 1024,
-        :cpu => 2,
-        :group => "database"
-    },
-    {
         :name => "app01." + DOMAIN,
         :eth1 => "10.73.0.21",
         :tpl => "centos/7",
@@ -36,7 +28,15 @@ servers = [
         :ram => 1024,
         :cpu => 2,
         :group => "backend"
-    }
+    },
+    {
+        :name => "db01." + DOMAIN,
+        :eth1 => "10.73.0.31",
+        :tpl => "centos/7",
+        :ram => 1024,
+        :cpu => 2,
+        :group => "database"
+	}
 ]
 
 Vagrant.configure(2) do |config|

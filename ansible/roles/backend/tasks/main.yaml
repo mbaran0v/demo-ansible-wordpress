@@ -12,11 +12,11 @@
     dest=/etc/nginx/nginx.conf
   notify: restart nginx
 
-- name: configure nginx (wp config)
-  template:
-    src=nginx/wp-back.conf.j2
-    dest=/etc/nginx/conf.d/wp-back.conf
-  notify: restart nginx
+#- name: configure nginx (wp config)
+#  template:
+#    src=nginx/wp-back.conf.j2
+#    dest=/etc/nginx/conf.d/wp-back.conf
+#  notify: restart nginx
 
 - name: start nginx
   service: name=nginx state=started enabled=yes

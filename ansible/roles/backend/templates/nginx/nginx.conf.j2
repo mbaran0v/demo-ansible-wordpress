@@ -25,22 +25,45 @@ http {
 
     include /etc/nginx/conf.d/*.conf;
 
-    server {
-        listen       80;
-        server_name  _;
-        root         /usr/share/nginx/html;
+    upstream php-fpm {
+        server 127.0.0.1:9000;
+    }
 
-        include /etc/nginx/default.d/*.conf;
+    server {
+        listen 80 default_server;
+        server_name "";
+ 
+        root /var/www/wordpress/;
+        client_max_body_size 64M;
+
+        # Deny access to any files with a .php extension in the uploads directory
+        location ~* /(?:uploads|files)/.*\.php$ {
+                deny all;
+        }
 
         location / {
+                index index.php index.html index.htm;
+                try_files $uri $uri/ /index.php?$args;
         }
 
-        error_page 404 /404.html;
-            location = /40x.html {
+        location ~* \.(gif|jpg|jpeg|png|css|js)$ {
+                expires max;
         }
 
-        error_page 500 502 503 504 /50x.html;
-            location = /50x.html {
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_pass php-fpm;
+
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                
+                include fastcgi_params;
         }
+
+        access_log /var/log/nginx/wp_access.log;
+        error_log /var/log/nginx/wp_error.log;
     }
 }
+
+# EOF
