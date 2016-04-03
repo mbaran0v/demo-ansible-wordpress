@@ -1,72 +1,50 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-DOMAIN = "test.lab"
+require "yaml"
 
-servers = [
-    {
-        :name => "lb01." + DOMAIN,
-        :eth1 => "10.73.0.11",
-        :tpl => "centos/7",
-        :ram => 1024,
-        :cpu => 2,
-        :group => "frontend",
-        :forward => { 8037 => 80 }
-    },
-    {
-        :name => "app01." + DOMAIN,
-        :eth1 => "10.73.0.21",
-        :tpl => "centos/7",
-        :ram => 1024,
-        :cpu => 2,
-        :group => "backend"
-    },
-    {
-        :name => "app02." + DOMAIN,
-        :eth1 => "10.73.0.22",
-        :tpl => "centos/7",
-        :ram => 1024,
-        :cpu => 2,
-        :group => "backend"
-    },
-    {
-        :name => "db01." + DOMAIN,
-        :eth1 => "10.73.0.31",
-        :tpl => "centos/7",
-        :ram => 1024,
-        :cpu => 2,
-        :group => "database"
-	}
-]
+servers = YAML.load_file('ansible/group_vars/all')
+
+DOMAIN = servers["vagrant"]["common"]["domain"]
 
 Vagrant.configure(2) do |config|
 
     config.vm.synced_folder ".", "/home/vagrant/sync", disabled: true
 
-    servers.each do |machine|
-        
-        config.vm.define machine[:name] do |node|
-        
-            node.vm.box = machine[:tpl]
-            node.vm.hostname = machine[:name]
-      
-            node.vm.network "private_network", ip: machine[:eth1], virtualbox__intnet: DOMAIN
+    servers["vagrant"]["instances"].each do |machine|
 
-            if machine.has_key?(:forward)
-                machine[:forward].each do |host_port,guest_port|
-                    node.vm.network "forwarded_port", guest: guest_port, host: host_port
+        machine_name = machine["name"] + "." + DOMAIN
+        
+        config.vm.define machine_name do |machine_config|
+
+            machine_config.vm.hostname = machine_name
+            machine_config.vm.box = machine["box"]
+
+            if machine.has_key?("interfaces")
+                interfaces = machine["interfaces"]
+
+                interfaces.each do |int|
+                    if int["type"] == "private_network"
+                        machine_config.vm.network int["type"], ip: int["ip"], virtualbox__intnet: int["name"]
+                    end
+                end
+            end
+
+            if machine.has_key?("forward")
+                machine["forward"].each do |port|
+                    machine_config.vm.network "forwarded_port", guest: port["guest"], host: port["host"], protocol: port["proto"]
                 end
             end
       
-            node.vm.provider "virtualbox" do |vb|
-                vb.name = machine[:name]
-                vb.customize ["modifyvm", :id, "--memory", machine[:ram]]
-                vb.customize ["modifyvm", :id, "--cpus", machine[:cpu]]
+            machine_config.vm.provider "virtualbox" do |vb|
+                vb.name = machine_name
+                vb.customize ["modifyvm", :id, "--memory", machine["ram"]]
+                vb.customize ["modifyvm", :id, "--cpus", machine["cpu"]]
             end
 
             config.vm.provision "ansible" do |ansible|
                 ansible.groups = {
-                    machine[:group] => machine[:name]
+                    machine["group"] => machine_name
                 }
                 ansible.playbook = "ansible/main.yaml"
             end

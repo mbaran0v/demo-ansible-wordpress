@@ -1,5 +1,67 @@
 ---
 
+vagrant:
+  common:
+    domain: test.lab
+  instances:
+    # load balancer (frontend)
+    - name: lb01
+      box: centos/7
+      ram: 512
+      cpu: 1
+      interfaces:
+        - ip: 10.73.0.11
+          name: test.lab
+          type: private_network
+      forward:
+        - { host: 8037, guest: 80, proto: tcp }
+      group: frontend
+
+    # application server (backend)
+    - name: app01
+      box: centos/7
+      ram: 512
+      cpu: 1
+      interfaces:
+        - ip: 10.73.0.21
+          name: test.lab
+          type: private_network
+      group: backend
+    # application server (backend)
+    - name: app02
+      box: centos/7
+      ram: 512
+      cpu: 1
+      interfaces:
+        - ip: 10.73.0.22
+          name: test.lab
+          type: private_network
+      group: backend
+
+    # database server
+    - name: db01
+      box: centos/7
+      ram: 512
+      cpu: 1
+      interfaces:
+        - ip: 10.73.0.31
+          name: test.lab
+          type: private_network
+      group: database
+
+# There are repositories URLs
+repo:
+  url_webtatic: https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+  url_percona: https://www.percona.com/redir/downloads/percona-release/redhat/latest/percona-release-0.1-3.noarch.rpm
+
+# These are the WordPress database settings
+wordpress:
+  version: 4.2.2
+  db_name: wp
+  db_user: wp
+  db_pass: wp-secret
+
+# remote user for ssh
 remote_user: vagrant
 
 # timezone
@@ -7,19 +69,14 @@ tz_name: Europe/Ulyanovsk
 tz_path: /usr/share/zoneinfo/Europe/Ulyanovsk
 
 # ip addresses
-backend_01: 10.73.0.21
-backend_02: 10.73.0.22
-db_01: 10.73.0.31
+#backend_01: 10.73.0.21
+#backend_02: 10.73.0.22
+#db_01: 10.73.0.31
 
-# These are the WordPress database settings
-wp_db_name: wp
-wp_db_user: wp
-wp_db_pass: wp-secret
-wp_db_host: 10.73.0.31
+#wp_db_name: wp
+#wp_db_user: wp
+#wp_db_pass: wp-secret
+#wp_db_host: 10.73.0.31
 
-wp_ver: 4.2.2
+#wp_ver: 4.2.2
 #wp_url: https://wordpress.org/latest.tar.gz
-
-# repo addresses
-repo_webtatic: https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-repo_percona: https://www.percona.com/redir/downloads/percona-release/redhat/latest/percona-release-0.1-3.noarch.rpm

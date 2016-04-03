@@ -31,3 +31,7 @@
   with_items:
     - net-tools
     - mc
+    - ntp
+
+- name: configure ntpd
+  service: name=ntpd state=started enabled=yes

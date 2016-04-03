@@ -11,3 +11,5 @@ then run, like this:
 	`firefox http://localhost:8037/`  
 
 The ansible playbook will configure PerconaDB, WordPress, Nginx, and PHP-FPM. When the run is complete, you can hit access server to begin the WordPress configuration.
+
+All settings for VMs stored in YAML file : ./ansible/group_vars/all
