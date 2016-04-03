@@ -15,20 +15,11 @@
 - name: start nginx
   service: name=nginx state=started enabled=yes
 
-- name: install PHP
-  yum: name={{ item }} state=latest
-  with_items:
-    - php56w
-    - php56w-mysqlnd
-
 - name: mkdir for root www
   file: path=/var/www/ state=directory
 
 - name: download wordress
   get_url: url=https://wordpress.org/wordpress-{{ wordpress["version"] }}.tar.gz dest=/tmp/wordpress.tar.gz
-
-#- name: unpack wordpress
-#  command: chdir=/var/www tar xpf /tmp/wordpress.tar.gz creates=/var/www/wordpress
 
 - stat: path=/tmp/wordpress.tar.gz
   register: wp_src
@@ -37,6 +28,11 @@
   unarchive: src=/tmp/wordpress.tar.gz dest=/var/www copy=no
   when: wp_src.stat.exists == True
 
+- name: configure wordpress
+  template:
+    src=wordpress/wp-config.php.j2
+    dest=/var/www/wordpress/wp-config.php
+
 - name: restore permissions
   file:
     path=/var/www/wordpress
@@ -44,13 +40,8 @@
     mode=755 owner=nginx group=nginx
     recurse=yes
 
-- name: configure wordpress
-  template:
-    src=wordpress/wp-config.php.j2
-    dest=/var/www/wordpress/wp-config.php
-
 - name: install php-fpm
-  yum: name=php56w-fpm state=latest
+  yum: name=php70w-fpm state=latest
 
 - name: configure php-fpm (disable old pools)
   command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.conf.original creates=/etc/php-fpm.d/www.conf.original
@@ -61,3 +52,9 @@
 
 - name: start php-fpm
   service: name=php-fpm state=started enabled=yes
+
+- name: install PHP
+  yum: name={{ item }} state=latest
+  with_items:
+    - php70w
+    - php70w-mysqlnd
